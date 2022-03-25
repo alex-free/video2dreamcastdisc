@@ -23,14 +23,14 @@ Table Of Contents
 *   [Changelog](#changelog)
 *   [Software Included In Suite](#bundled)
 
-![](images/vid2dcd-1.png) ![](images/vid2dcd-2.png) ![](images/vid2dcd-3.png) ![](images/vid2dcd-4.png) ![](images/vid2dcd-5.png) ![](images/vid2dcd-6.png)
+![](images/vid2dcd-1.png) ![](images/vid2dcd-2.png) ![](images/vid2dcd-3.png) ![](images/vid2dcd-4.png) ![](images/vid2dcd-5.png)
 
 Downloads
 ---------
 
-### v1.1 - 2/18/2022
+### v1.1.1 - 3/25/2022
 
-[Video2DreamcastDisc v1.1](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1/video2dreamcastdisc-1.1-win32.zip) _For Windows 7 32-bit/64-bit or newer_
+[Video2DreamcastDisc v1.1.1](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.1/video2dreamcastdisc-1.1.1-win32.zip) _For Windows 7 32-bit/64-bit or newer_
 
 Using git:
 
@@ -46,13 +46,14 @@ Video2DreamcastDisc provides the `vid2dcd.bat` script in each release, which per
 *   Drag n' drop a video file into the `vid2dcd.bat` file to start converting the dropped file (recommended method).
 *   Open `cmd.exe`, and execute `vid2dcd.bat` with an argument like `vid2dcd.bat myhuge.mkv`.
 
-When executing the `vid2dcd.bat` with a media file as argument as explained in the above 2 methods, you will be prompted in the `cmd.exe` window for your desired video bitrate. This does not effect the audio in your final video played on the Sega Dreamcast. The maximum video bitrate you can enter that will actually play on the Sega Dreamcast is `3600`. I encounted some stuttering only in the first minute of playbackin videos at this bitrate. Anyways I recommend `3300` to gaurentee no stuttering on any CD-R. This looks great, and doesn't take up quite as much space as using `3600`. You can only overburn so much to a CD-R, so if you find that using your desired bitrate generates to big of a `.cdi` for you to burn on your CD-R media you should use a lower value. I do not recommend anything lower then `2000`, but the choice is yours for the size/length of playback tradeoff.
-
-After selecting a bitrate, you will be provided with an option menu:
+When executing the `vid2dcd.bat` with a media file as argument as explained in the above 2 methods, you will be prompted in the `cmd.exe` window to enter an option:
 
 *   Option 1 will create a `video.cdi` file in the Video2DreamcastDisc directory and burn that file automatically to a blank CD-R in your computer's optical drive, all in one go.
 *   Option 2 will create a `video.cdi` file in the Video2DreamcastDisc directory that can be burned to a CD-R for Sega Dreamcast playback..
 *   Option 3 will create a `video.sfd` file in the Video2DreamcastDisc directory.
+*   Option 4 allows you to split an existing video file into multiple segments that are each limited to a maximum amount of minutes per segment that you provide. This means you can take a very long video file and split it into i.e. 25 minute segments so that each part of the video can be it's own video file which individually fis on it's own CD-R. A movie could be split like this to be converted by Video2DreamcastDisc afterwards for playback via multiple CD-Rs.
+
+If you have selected option 1, 2, or 3, the next thing you will be prompted for is your desired video bitrate. This does not effect the audio in your final video played on the Sega Dreamcast. The maximum video bitrate you can enter that will actually play on the Sega Dreamcast is `3600`. I encountered some stuttering only in the first minute of playback in videos at this bitrate. Anyways I recommend `3300` to guarantee no stuttering on any CD-R. This looks great, and doesn't take up quite as much space as using `3600`. You can only over burn so much to a CD-R, so if you find that using your desired bitrate generates to big of a `.cdi` for you to burn on your CD-R media you should use a lower value. I do not recommend anything lower then `2000`, but the choice is yours for the size/length of playback trade off.
 
 Video Specifications
 --------------------
@@ -66,6 +67,12 @@ Video Specifications
 
 Changelog
 ---------
+
+### Version 1.1.1 (3/25/2022)
+
+*   Added option 4 to split long videos into multiple shorter segments for further conversion by Video2DreamcastDisc.
+*   Change both `WARNER.PVR` and `SOFTDEC.PVR` to my own custom white colored PVR file to remove the "We Proudly Present" banner played at the end of videos by SFDPlayer.
+*   Changed output files from being named "video", they are now named the same as the original source file with a different extension.
 
 ### Version 1.1 (2/18/2022)
 
