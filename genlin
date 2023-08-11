@@ -1,0 +1,79 @@
+#!/bin/bash
+
+version=1.1.2
+arch=$(uname -p)
+package=video2dreamcastdisc-$version-linux-$arch
+set -e
+
+cd "$(dirname "$0")"
+rm -rf build-tmp $package $package.zip cdrecord-pled cdirip-pled mkisofs-pled
+
+# just clean built binaries/releases from source and exit now if given the argument 'clean'
+if [ "$1" == "clean" ]; then
+    rm -rf ffmpeg-git-amd64-static.tar.xz ffmpeg-git-20230721-amd64-static 
+    exit 0
+fi
+
+mkdir -p build-tmp $package/bin $package/licenses
+
+# LegalADX
+gcc -static legaladx.c -o $package/bin/legaladx
+
+# CDIRIP
+cp -r cdirip build-tmp
+cd build-tmp/cdirip
+make -j`nproc` -f Makefile.linux
+../../pled/pled ./cdirip ../../cdirip-pled
+cp -r ../../cdirip-pled/* ../../$package/bin
+cd ../../
+
+# CDRECORD
+cp -r cdrtools build-tmp
+cd build-tmp/cdrtools
+make -j`nproc` GMAKE_NOWARN=true
+# use * here because the begining name of the parent folder differs by architecture/OS/compiler
+../../pled/pled ./cdrecord/OBJ/*cc/cdrecord ../../cdrecord-pled
+
+# MKISOFS
+../../pled/pled ./mkisofs/OBJ/x86_64-linux-cc/mkisofs ../../mkisofs-pled
+
+# package files
+cd ../../
+cp -ru \
+cdrecord-pled/* \
+mkisofs-pled/* \
+cdirip-pled/* \
+bin/sfd_player \
+bin/IP.BIN \
+bin/adxencd.exe \
+bin/cdi4dc.exe \
+bin/sfdmux.exe \
+bin/Sfdmux.dll \
+$package/bin
+rm -rf cdrecord-pled mkisofs-pled cdirip-pled build-tmp
+
+cp -r readme.md images vid2dcd.sh $package/
+
+# FFmpeg/FFprobe
+if [ ! -f "ffmpeg-git-amd64-static.tar.xz" ]; then
+    wget https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz 
+fi
+
+if [ ! -d "ffmpeg-git-amd64-static" ]; then
+    tar xf ffmpeg-git-amd64-static.tar.xz 
+    cp -r ffmpeg-git-20230721-amd64-static $package/bin/ffmpeg-64-static
+fi
+
+# copy and rename license files
+cp unlicense.txt $package/licenses/video2dreamcastdisc.txt
+cp pled/unlicense.txt $package/licenses/pled.txt
+cp cdirip/LICENSE $package/licenses/cdirip-gpl2.txt
+cp cdrtools/GPL-2.0.txt $package/licenses/cdrecord-gpl2.txt
+cp cdrtools/CDDL.Schily.txt $package/licenses/cdrecord-cddl.txt
+cp licenses/cdi4dc.txt $package/licenses/cdi4dc.txt
+cp ffmpeg-git-20230721-amd64-static/GPLv3.txt $package/licenses/ffmpeg.txt
+cp ffmpeg-git-20230721-amd64-static/GPLv3.txt $package/licenses/ffprobe.txt
+
+# send it
+chmod -R 777 $package
+zip -r $package.zip $package

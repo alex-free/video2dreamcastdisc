@@ -4,17 +4,16 @@
 
 By Alex Free
 
-Video2DreamcastDisc is a complete [suite of programs](#bundled) that can convert **any video file** for playback on a Sega Dreamcast console using the [Sofdec](https://segaretro.org/Sofdec) video format.
+Video2DreamcastDisc is a complete [suite of programs](#software-suite) that can convert **any video file** for playback on a Sega Dreamcast console using the [Sofdec](https://segaretro.org/Sofdec) video format (used by in-game FMVs). You can convert media files to a self-booting, auto-playing, Sega Dreamcast `.cdi` file that can be burned to a CD-R for playback of said media on Mil-CD exploitable consoles. 
 
-Convert any existing media file to a self-booting auto-playing Sega Dreamcast .CDI file that can be burned to a CD-R for use on Mil-CD exploitable consoles. Or use it as a replacement for the [Sega Dreamcast Movie Creator](http://www.dc-swat.ru/download/pc/SFD_Tool_Pack_v1.0_by_SWAT.exe) in a workflow for creating Sofdec FMVs in Sega Dreamcast development.
+Video2DremacastDisc can also be used as a modern replacement for the [Sega Dreamcast Movie Creator](http://www.dc-swat.ru/download/pc/SFD_Tool_Pack_v1.0_by_SWAT.exe) in a workflow for [creating Sofdec FMV files](#option-4).
 
 ## Table Of Contents
 
 *   [Downloads](#downloads)
 *   [Usage](#usage)
 *   [Video Specifications](#svideo-specifications)
-*   [License](#License)
-
+*   [Software Suite](#software-suite)
 
 ## Links
 
@@ -23,78 +22,156 @@ Convert any existing media file to a self-booting auto-playing Sega Dreamcast .C
 
 ## Downloads
 
-### v1.1.1 - 3/25/2022
+### Version 1.1.2 (8/10/2023)
 
-[Video2DreamcastDisc v1.1.1](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.1/video2dreamcastdisc-1.1.1-win32.zip) _For Windows 7 32-bit/64-bit or newer_
+*   [Windows x86](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.2/video2dreamcastdisc-1.1.2-windows-x86.zip) _For Windows 7 32-bit/64-bit or newer_.
 
-Using git:
+*   [Linux x86\_64](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.2/video2dreamcastdisc-1.1.2-linux-x86_64.zip) _For x86_64 Linux Distros_ . 
 
-    git clone https://github.com/alex-free/video2dreamcastdisc
+**The Linux builds are portable, although they do require [wine](https://www.winehq.org/) to be installed to work due to a few remaining windows-only programs needed in the conversion process.**
 
-View [all releases](https://github.com/alex-free/video2dreamcastdisc/releases/).
+Changes:
 
-Changelog:
+*   Added portable Linux build.
+*   Refactored code and new build system.
+*   Updated FFmpeg to 2023-08-07-git-d295b6b693 `ffmpeg-git-full`, pre-built static binaries from [https://www.gyan.dev/ffmpeg/builds](https://www.gyan.dev/ffmpeg/builds/).
+*   New docs.
 
-### Version 1.1.1 (3/25/2022)
-
-*   Added option 4 to split long videos into multiple shorter segments for further conversion by Video2DreamcastDisc.
-*   Change both `WARNER.PVR` and `SOFTDEC.PVR` to my own custom white colored PVR file to remove the "We Proudly Present" banner played at the end of videos by SFDPlayer.
-*   Changed output files from being named "video", they are now named the same as the original source file with a different extension.
-
-### Version 1.1 (2/18/2022)
-
-*   Updated SFD\_Player using the ECHELON self-boot method.
-*   The `vid2dcd.bat` script now creates a `video.cdi` file using CDI4DC which is self-bootable.
-*   Moved tools into the `bin` directory.
-*   Added automatic burning ability of video.cdi.
-*   Added option to just make a Sofdec .sfd file and nothing else.
+[About previous versions](changelog.md).
 
 ## Usage
 
-Video2DreamcastDisc provides the `vid2dcd.bat` script in each release, which performs all operations. This script accepts only one argument. You can either:
+Video2DreamcastDisc is driven a command line interface provided by the `vid2dcd.bat` script (Windows) or the `vid2dcd.sh` script (Linux), which are found in each release. These scripts accept only one argument. You can Drag n' drop a video file into the `vid2dcd.bat` script on Windows to provide said argument. You can also do this with the `vid2dcd.sh` script on most Linux distributions. Alternatively on Windows, you may open `cmd.exe`, and execute `vid2dcd.bat` with an argument like `vid2dcd.bat myhuge.mkv`. On Linux, you may also do this by opening the Terminal and executing `./vid2dcd.sh` with an argument like `./vid2dcd.sh somerandom.mp4`.
 
-*   Drag n' drop a video file into the `vid2dcd.bat` file to start converting the dropped file (recommended method).
-*   Open `cmd.exe`, and execute `vid2dcd.bat` with an argument like `vid2dcd.bat myhuge.mkv`.
+With a media file as the only argument to these scripts, an option select menu will be displayed. Select an option by typing the corresponding number.
 
-When executing the `vid2dcd.bat` with a media file as argument as explained in the above 2 methods, you will be prompted in the `cmd.exe` window to enter an option:
+![example 1 linux](images/vid2dcd-lin-1.png) 
 
-*   Option 1 will create a `video.cdi` file in the Video2DreamcastDisc directory and burn that file automatically to a blank CD-R in your computer's optical drive, all in one go.
-*   Option 2 will create a `video.cdi` file in the Video2DreamcastDisc directory that can be burned to a CD-R for Sega Dreamcast playback..
-*   Option 3 will create a `video.sfd` file in the Video2DreamcastDisc directory.
-*   Option 4 allows you to split an existing video file into multiple segments that are each limited to a maximum amount of minutes per segment that you provide. This means you can take a very long video file and split it into i.e. 25 minute segments so that each part of the video can be it's own video file which individually fis on it's own CD-R. A movie could be split like this to be converted by Video2DreamcastDisc afterwards for playback via multiple CD-Rs.
+### Option 1 
 
-If you have selected option 1, 2, or 3, the next thing you will be prompted for is your desired video bitrate. This does not effect the audio in your final video played on the Sega Dreamcast. The maximum video bitrate you can enter that will actually play on the Sega Dreamcast is `3600`. I encountered some stuttering only in the first minute of playback in videos at this bitrate. Anyways I recommend `3300` to guarantee no stuttering on any CD-R. This looks great, and doesn't take up quite as much space as using `3600`. You can only over burn so much to a CD-R, so if you find that using your desired bitrate generates to big of a `.cdi` for you to burn on your CD-R media you should use a lower value. I do not recommend anything lower then `2000`, but the choice is yours for the size/length of playback trade off.
+Create a `video.cdi` file in the Video2DreamcastDisc directory and burn that file automatically to a blank CD-R, all in one go.
 
-![example 1](images/vid2dcd-1.png) 
+### Option 2 
 
-![example 2](images/vid2dcd-2.png) 
+Create a `video.cdi` file in the Video2DreamcastDisc directory that can be burned to a CD-R for Sega Dreamcast playback.
 
-![example 3](images/vid2dcd-3.png) 
+### Option 3 
 
-![example 4](images/vid2dcd-4.png) 
+Create a `video.sfd` file in the Video2DreamcastDisc directory.
 
-![example 5](images/vid2dcd-5.png)
+### Option 4 
+
+Split an existing video file into multiple segments that are each limited to a maximum amount of minutes per segment specified by you. This means you can take a very long video file and split it into i.e. 25 minute segments so that each part of the video can be it's own video file which individually fis on it's own CD-R. A movie could be split like this to be converted by Video2DreamcastDisc afterwards for playback via multiple CD-Rs.
+
+If you have selected option 1, 2, or 3 the next thing you will be prompted for is your desired video bitrate. This must be a number in the range of 1000 to 3200.
+
+![example 1 windows](images/vid2dcd-win-1.png) 
+
+![example 2 linux](images/vid2dcd-lin-2.png) 
+
+![example 2 windows](images/vid2dcd-win-2.png) 
+
+![example 3 linux](images/vid2dcd-lin-3.png)
+
+![example 3 windows](images/vid2dcd-win-3.png) 
+
+![example 4 windows](images/vid2dcd-win-4.png) 
+
+If you select option 1 on Linux, you'll need to enter your account password to allow Video2dreamcastdisc access to burn the CD-R:
+
+![example 4 linux](images/vid2dcd-lin-4.png) 
+
+![example 5 linux](images/vid2dcd-lin-5.png)
+
+![example 6 linux](images/vid2dcd-lin-6.png)
 
 ### Video Specifications
 
 *   Resolution: 352x240 (maximum supported by SFD\_Player)
-*   Video bitrate: user selectable, up to 3600 kilobits per second
+*   Video bitrate: user selectable, up to 3200 kilobits per second
 *   Audio bitrate: 396 kilobits per second (maximum supported by SFD\_Player)
 *   Audio: Stero ADX
 *   Video: MPEG-1
 *   Format: Sofdec Video
 
-### Version 1.0 (2/13/2022)
+## Software Suite
 
-*   First release.
+Video2DreamcastDisc itself is released into the public domain, (`licenses/video2dreamcastdisc.txt`). The `vid2dcd.sh` and `vid2dcd.bat` scripts use the following software:
 
-# License
+### [FFprobe](https://www.ffmpeg.org/)
 
-* Video2DreamcastDisc itself is released under the 3-BSD license, please see the file `licenses/v2dcd.txt` in each release. My small tool 'legaladx' is also released under the same license, found in the file `licenses/legaladx.txt`.
-*   [FFmpeg](https://www.ffmpeg.org/) - this does the initial conversion from the source file into WAV audio and MPEG-1 video. FFmpeg is licensed under the GNU GPL v3. See the file `licenses/ffmpeg.txt` in each Video2DreamcastDisc release for more info. The FFmpeg included in Video2DreamcastDisc is the "essentials" static build from [https://www.gyan.dev/ffmpeg/builds](https://www.gyan.dev/ffmpeg/builds/).
-*   [Adxencd](http://www.dc-swat.ru/download/pc/ADX_Tool_Pack_v1.0_by_SWAT.exe) - released by [dcswat.ru](http://www.dc-swat.ru). This converts the WAV file previously converted from the source file with FFmpeg to an ADX audio file.
-*   LegalADX - this program was written by me in C to do one thing, convert the audio ADX file to a new one that work with Sfdmuxapp. This is open source under the 3-BSD license and source code is provided in the Video2DreamcastDisc releases. See the file `licenses/legaladx.txt` for more info.
-*   [Sfdmuxapp](https://forum.xentax.com/viewtopic.php?t=3084) - created by [Zench](https://forum.xentax.com/memberlist.php?mode=viewprofile&u=4697&sid=d224e63302049b15631fe92cb3527c94), released on July 15th 2008. This is a command line program that interfaces with the `Sfdmux.dll` from the [Sega Dreamcast Movie Creator](http://www.dc-swat.ru/download/pc/SFD_Tool_Pack_v1.0_by_SWAT.exe).
-*   [SFD\_Player](http://www.dc-swat.ru/download/dc/SFD_Player.7z) - released all the way back in 2000, this Sega Dreamcast program automatically plays the `movie/BUMPER.SFD` file on the disc it is burned to. I have updated the original release using the ECHELON method for self-boot so that it does not require the Utopia Boot Disc!
-*   [MKISOFS](http://cdrtools.sourceforge.net/private/cdrecord.html) - part of the cdrtools suite of software, which is licensed under the GNU GPL and CDDL licenses. See the files `licenses/mkisofs-gpl3.txt` and `licenses/mkisofs-cddl.txt` in each Video2DreamcastDisc release directory for more info.
-*   [Cdrecord](http://cdrtools.sourceforge.net/private/cdrecord.html) - part of the cdrtools suite of software, which is licensed under the GNU GPL and CDDL licenses. See the files `licenses/cdrecord-gpl3.txt` and `licenses/cdrecord-cddl.txt` in each Video2DreamcastDisc release directory for more info. [CDIRip](https://sourceforge.net/projects/cdimagetools/files/CDIRip/) - created by by DeXT/Lawrence Williams, which is licensed under GNU GPL v2 license. See the files `licenses/cdirip.txt` in each Video2DreamcastDisc release directory for more info.*   [CDI4DC](https://github.com/sizious/img4dc) - created by [Sizious](https://github.com/sizious/). CDI4DC is licensed under the GNU GPL v3, see the file `licenses/cdi4dc.txt` for more info.
+Use: Displays media file info for [option 4](#option-4).
+
+Versions: 2023-08-07-git-d295b6b693 `ffmpeg-git-full`, pre-built static binaries from [https://www.gyan.dev/ffmpeg/builds](https://www.gyan.dev/ffmpeg/builds/) (Windows), 20230721 `ffmpeg-git-amd64-static` pre-built static binaries from [https://johnvansickle.com/ffmpeg/](https://johnvansickle.com/ffmpeg/).
+
+License: GNU GPL v3 (`licenses/ffprobe.txt`).
+
+### [FFmpeg](https://www.ffmpeg.org/)
+
+Use: Does the initial conversion from the source file into WAV audio and MPEG-1 video, which are then usable by `adxencd`.
+
+Versions: 2023-08-07-git-d295b6b693 `ffmpeg-git-full`, pre-built static binaries from [https://www.gyan.dev/ffmpeg/builds](https://www.gyan.dev/ffmpeg/builds/) (Windows), 20230721 `ffmpeg-git-amd64-static` pre-built static binaries from [https://johnvansickle.com/ffmpeg/](https://johnvansickle.com/ffmpeg/).
+
+License: GNU GPL v3 (`licenses/ffmpeg.txt`).
+
+###   [Adxencd](http://www.dc-swat.ru/download/pc/ADX_Tool_Pack_v1.0_by_SWAT.exe) 
+
+Use: This converts the WAV file previously converted from the source file with FFmpeg to an ADX audio file.
+
+Version: 1.0.
+
+License: Released by [dcswat.ru](http://www.dc-swat.ru) from leaked Dreamcast SDK...
+
+### LegalADX
+
+Use: This program was written by me in C to do one thing, convert the audio ADX file output from adxencd.exe to one that work with [Sfdmuxapp](https://forum.xentax.com/viewtopic.php?t=3084).
+
+Version: 1.0.
+
+License: 3-BSD (`licenses/legaladx.txt`).
+
+### [Sfdmuxapp](https://forum.xentax.com/viewtopic.php?t=3084)
+
+Use: Created by [Zench](https://forum.xentax.com/memberlist.php?mode=viewprofile&u=4697&sid=d224e63302049b15631fe92cb3527c94), released on July 15th 2008. This is a command line program that interfaces with the `Sfdmux.dll` from the [Sega Dreamcast Movie Creator](http://www.dc-swat.ru/download/pc/SFD_Tool_Pack_v1.0_by_SWAT.exe) which allows for command line automated conversion to the SFD format. This uses the output of `legaladx` and the MPEG-1 video track as input to convert it to SFD format.
+
+Version: 1.0.
+
+###  [SFD\_Player](http://www.dc-swat.ru/download/dc/SFD_Player.7z)
+
+Use: Released all the way back in 2000, this Sega Dreamcast program automatically plays the `movie/BUMPER.SFD` file on the disc it is burned to. I have updated the original release using the ECHELON method for self-boot so that it does not require the Utopia Boot Disc!
+
+Version: 1.0.
+
+License: Apparently the original (lost?) source code to SFD_Player itself is based on an example found in the leaked Dreamcast SDK...
+
+### [MKISOFS](http://cdrtools.sourceforge.net/private/cdrecord.html)
+
+Use: Makes ISO image which is then used by `cdi4dc` to make the self-boot CDI image.
+
+Versions: Cdrecord-ProDVD-ProBD-Clone 3.00 (Linux), Cdrecord-ProDVD-ProBD-Clone 2.01.01a36 (Windows).
+
+Licenses: GNU GPL v2 and CDDL, (`licenses/mkisofs-gpl3.txt` and `licenses/mkisofs-cddl.txt`). 
+
+### [CDI4DC](https://github.com/sizious/img4dc)
+
+Use: Created by [Sizious](https://github.com/sizious/), this builds the CDI file.
+
+Version: 0.3.
+
+License: GNU GPL v3 (`licenses/cdi4dc.txt`).
+
+### [CDIRip](https://github.com/jozip/cdirip)
+
+Use: Created by DeXT/Lawrence Williams, cdirip extracts the CDI file built by `cdi4dc` for burning with `cdrecord`
+
+Versions: 0.6.3 (Windows), 0.6.4 (Linux).
+
+License: GNU GPL v2 (`licenses/cdirip.txt`).
+
+### [Cdrecord](http://cdrtools.sourceforge.net/private/cdrecord.html)
+
+Use: Burns CD-R.
+
+Versions: Cdrecord-ProDVD-ProBD-Clone 3.00 (Linux), Cdrecord-ProDVD-ProBD-Clone 2.01.01a36 (Windows).
+
+Licenses: GNU GPL v2 and CDDL (`licenses/cdrecord-gpl3.txt` and `licenses/cdrecord-cddl.txt`). 

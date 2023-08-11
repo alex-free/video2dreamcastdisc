@@ -3,7 +3,7 @@ cd /d %~dp0\bin
 set argC=0
 for %%x in (%*) do Set /A argC+=1
 
-echo Video2DreamcastDisc v1.1.1 By Alex Free (3/25/2022)
+echo Video2DreamcastDisc v1.1.2 By Alex Free (8/10/2023)
 echo.
 
 IF NOT "%argC%" == "1" (
@@ -55,7 +55,6 @@ del video.m1v 2> nul
 del audio.sfa 2> nul
 del video.iso 2> nul
 del ..\"%~n1".cdi 2> nul
-del ..\video.sfd 2> nul
 del sfd_player\movie\BUMPER.SFD 2> nul
 
 IF %output% == 4 (
@@ -70,14 +69,7 @@ IF %output% == 4 (
 	exit 0
 )
 
-echo =======================
-echo Max Video Bitrate: 3300
-echo Min Video Bitrate: 1000
-echo =======================
-echo NOTE: Technically the max video bitrate is 3600, but anything above 3300 may cause stuttering in the first minute of playback, however this goes away.
-echo.
-echo Lower = more video playback time per CD-R but less quality
-echo Higher = less video playback time per CD-R but higher quality
+echo Enter a number in the range of 1000-3200. Lower values = more video playback time per CD-R but less quality. Higher values = less video playback time per CD-R but higher quality
 set /p bitrate="Enter your desired video track bitrate value in kilobits per second:"
 echo.
 
@@ -103,12 +95,14 @@ IF %output% == 3 (
 	mkisofs -V SFDVIDEO -G IP.BIN -joliet -rock -l -o video.iso sfd_player
 	cdi4dc video.iso ..\\"%~n1".cdi -d
 	cdirip ..\\"%~n1".cdi -iso
-	cdrecord -overburn -speed=8 -v -tao -multi -xa s01t01.iso
-	cdrecord -eject -overburn -speed=8 -v -tao -xa s02t02.iso
+	cdrecord -overburn -speed=1 -v -tao -multi -xa s01t01.iso
+	cdrecord -eject -overburn -speed=1 -v -tao -xa s02t02.iso
 	del s01t01.iso
 	del s02t02.iso
 	echo.
-	echo  A "%~n1.cdi" file has been created in "%~dp0" from the input file "%~f1", and should have been successfully burned to a CD-R in your computer's optical drive. If the burn did not complete, see if the "%~n1.cdi" file is to big to fit on your CD-R. Note that overburning is supported by Video2DreamcastDisc so you should be able to write more to the CD-R than it's official capacity, but by how much depends on your CD-R media and optical drive. You can split up the video into smaller segments with option number 4 if your video needs to be split into multiple discs.
+	echo  A "%~n1.cdi" file has been created in "%~dp0" from the input file "%~f1", and should have been successfully burned to a CD-R by your computer's optical drive. 
+	echo.
+	echo If the burn did not complete, see if the "%~n1.cdi" file is too big to fit on your CD-R. Note that overburning is supported by Video2DreamcastDisc so you should be able to write more to the CD-R than it's official capacity, but by how much depends on your CD-R media and optical drive. You can split up the video into smaller segments with option number 4 if your video needs to be split into multiple discs.
 	echo.
 	echo After a successful burn, this CD-R will self-boot then auto-play "%~f1" on the Sega Dreamcast!
 )
