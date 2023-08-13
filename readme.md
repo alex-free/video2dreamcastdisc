@@ -4,7 +4,7 @@
 
 By Alex Free
 
-Video2DreamcastDisc is a complete [suite of programs](#software-suite) that can convert **any video file** for playback on a Sega Dreamcast console using the [Sofdec](https://segaretro.org/Sofdec) video format (used by in-game FMVs). You can convert media files to a self-booting, auto-playing, Sega Dreamcast `.cdi` file that can be burned to a CD-R for playback of said media on Mil-CD exploitable consoles. 
+Video2DreamcastDisc is a complete [suite of programs](#software-suite) that can convert **any video file (30 fps or lower)** for playback on a Sega Dreamcast console using the [Sofdec](https://segaretro.org/Sofdec) video format (used by in-game FMVs). You can convert media files to a self-booting, auto-playing, Sega Dreamcast `.cdi` file that can be burned to a CD-R for playback of said media on Mil-CD exploitable consoles. 
 
 Video2DremacastDisc can also be used as a modern replacement for the [Sega Dreamcast Movie Creator](http://www.dc-swat.ru/download/pc/SFD_Tool_Pack_v1.0_by_SWAT.exe) in a workflow for [creating Sofdec FMV files](#option-4).
 
@@ -22,20 +22,22 @@ Video2DremacastDisc can also be used as a modern replacement for the [Sega Dream
 
 ## Downloads
 
-### Version 1.1.2 (8/10/2023)
-
-*   [Windows x86](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.2/video2dreamcastdisc-1.1.2-windows-x86.zip) _For Windows 7 32-bit/64-bit or newer_.
-
-*   [Linux x86\_64](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.2/video2dreamcastdisc-1.1.2-linux-x86_64.zip) _For x86_64 Linux Distros_ . 
-
 **The Linux builds are portable, although they do require [wine](https://www.winehq.org/) to be installed to work due to a few remaining windows-only programs needed in the conversion process.**
+
+### Version 1.1.3 (8/12/2023)
+
+*   [Windows x86](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.3/video2dreamcastdisc-1.1.3-windows-x86.zip) _For Windows 10 32-bit/64-bit or newer_.
+
+*   [Linux x86\_64](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.3/video2dreamcastdisc-1.1.3-linux-x86_64.zip) _For x86_64 Linux Distributions_ . 
 
 Changes:
 
-*   Added portable Linux build.
-*   Refactored code and new build system.
-*   Updated FFmpeg to 2023-08-07-git-d295b6b693 `ffmpeg-git-full`, pre-built static binaries from [https://www.gyan.dev/ffmpeg/builds](https://www.gyan.dev/ffmpeg/builds/).
-*   New docs.
+*   Fixed `adxencd.exe` crash when using media files with more then 2 audio tracks. Audio will always be stereo (mono input will be 'converted' to stereo, really dual mono)
+*   Improved video quality to max by setting `-qscale 0`.
+*   Fixed MKV files not being split properly by option 4 by adding MKVMerge. This makes the Windows version require Windows 10 or later however so that MKVMerge works.
+*   Fixed a relative path as argument 1 not working on Linux.
+*   Removed video bitrate range limit, allowing end users to experiment.
+*   Changed recommended video bitrate range to 1000-2800 kilobits per second.
 
 [About previous versions](changelog.md).
 
@@ -175,3 +177,11 @@ Use: Burns CD-R.
 Versions: Cdrecord-ProDVD-ProBD-Clone 3.00 (Linux), Cdrecord-ProDVD-ProBD-Clone 2.01.01a36 (Windows).
 
 Licenses: GNU GPL v2 and CDDL (`licenses/cdrecord-gpl3.txt` and `licenses/cdrecord-cddl.txt`). 
+
+### [MKVMerge](https://mkvtoolnix.download/)
+
+Use: Splits MKV files.
+
+Versions: v78.0 (Windows), v65.0 (Linux).
+
+License: GNU GPL v2 (`licenses/mkvmerge.txt`). 

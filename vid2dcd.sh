@@ -2,7 +2,7 @@
 
 set -e
 
-echo "Video2DreamcastDisc v1.1.2 By Alex Free (8/10/2023)"
+echo "Video2DreamcastDisc v1.1.3 By Alex Free (8/12/2023)"
 
 if [ $# -ne 1 ]; then
     echo "Incorrect number of arguments given to $0, aborted"
@@ -23,7 +23,7 @@ else
     echo "Input File: "$1""
 fi
 
-cd "$(dirname "$0")"/bin
+cd "$(dirname "$0")"
 
 echo "What do you want to do with "$1"?"
 echo
@@ -65,11 +65,11 @@ select opt in make-cdi-and-burn make-cdi make-sfd split quit; do
 done
 
 echo
-rm -rf ../"$output_name".cdi video.iso audio.sfa video.m1v audio.adx audio.wav sfd_player/movie/BUMPER.SFD
+rm -rf "$output_name".cdi bin/video.iso bin/audio.sfa bin/video.m1v bin/audio.adx bin/audio.wav bin/sfd_player/movie/BUMPER.SFD
 
 if [ "$output" = 4 ]; then
-    rm -rf ../"${output_name%.*}"-splits
-    mkdir ../"${output_name%.*}"-splits
+    rm -rf "${output_name%.*}"-splits
+    mkdir "${output_name%.*}"-splits
 	  read -p "Set split interval in minutes:" split
 
     while [[ ! "$split" =~ ^[0-9]+$ ]]; do
@@ -77,11 +77,17 @@ if [ "$output" = 4 ]; then
        read -p "Set split interval in minutes:" split
     done
 
-    ffmpeg-64-static/ffmpeg -i "$1" -codec copy -f segment -segment_time 00:"$split":00 -reset_timestamps 1 ../"${output_name%.*}"-splits/"${output_name%.*}%03d.${output_name##*.}"
+  if [ "${output_name##*.}" != "mkv" -a ] && ["${output_name##*.}" != "MKV" ]; then
+    bin/ffmpeg-64-static/ffmpeg -i "$1" -codec copy -f segment -segment_time 00:"$split":00 -reset_timestamps 1 "${output_name%.*}"-splits/"${output_name%.*}-%03d.${output_name##*.}"
     exit 0
+  fi
+
+# handle mkv with mkvmerge since ffmpeg doesn't work for mkv splitting
+  ./mkvmerge --split duration:00:"$split":00.000 "$1" -o "${output_name%.*}"-splits/"${output_name%.*}-split.${output_name##*.}"
+  exit 0
 fi
 
-echo Enter a number in the range of 1000-3200. Lower values = more video playback time per CD-R but less quality. Higher values = less video playback time per CD-R but higher quality
+echo Enter a number in the range of 1000-2800. Lower values = more video playback time per CD-R but less quality. Higher values = less video playback time per CD-R but higher quality. Any value above 2800 may result in stuttering depening on the CD media.
 read -p "Enter your desired video track bitrate value in kilobits per second:" bitrate
 echo
 
@@ -90,17 +96,21 @@ while [[ ! "$bitrate" =~ ^[0-9]+$ ]]; do
    read -p "Enter your desired video track bitrate value in kilobits per second:" bitrate
 done
 
-while [ "$bitrate" -gt 3200 -o "$bitrate" -lt 1000 ]; do
-   echo "${bitrate} is not in the valid range, try again"
-   read -p "Enter your desired video track bitrate value in kilobits per second:" bitrate
-   while [[ ! "$bitrate" =~ ^[0-9]+$ ]]; do
-    echo "${bitrate} is not a number, try again"
-    read -p "Enter your desired video track bitrate value in kilobits per second:" bitrate
-   done
-done
+# Commented out to allow expiermentation
+#while [ "$bitrate" -gt 2800 -o "$bitrate" -lt 1000 ]; do
+#   echo "${bitrate} is not in the valid range, try again"
+#   read -p "Enter your desired video track bitrate value in kilobits per second:" bitrate
+#   while [[ ! "$bitrate" =~ ^[0-9]+$ ]]; do
+#    echo "${bitrate} is not a number, try again"
+#    read -p "Enter your desired video track bitrate value in kilobits per second:" bitrate
+#   done
+#done
 
-ffmpeg-64-static/ffmpeg -i "$1" -vcodec mpeg1video -b:v "$bitrate"k -maxrate "$bitrate"k -minrate "$bitrate"k -bufsize "$bitrate"k -muxrate "$bitrate"k -s 352x240 -an video.m1v
-ffmpeg-64-static/ffmpeg -i "$1" audio.wav
+bin/ffmpeg-64-static/ffmpeg -i "$1" -vcodec mpeg1video -b:v "$bitrate"k -maxrate "$bitrate"k -minrate "$bitrate"k -bufsize "$bitrate"k -muxrate "$bitrate"k -s 352x240 -an -qscale 0 bin/video.m1v
+bin/ffmpeg-64-static/ffmpeg -i "$1" -ac 2 bin/audio.wav
+
+# now we don't need $1
+cd bin
 wine adxencd audio.wav audio.adx
 ./legaladx audio.adx audio.sfa
 wine sfdmux -V=video.m1v -A=audio.sfa -S=BUMPER.SFD

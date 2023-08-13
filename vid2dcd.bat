@@ -3,7 +3,7 @@ cd /d %~dp0\bin
 set argC=0
 for %%x in (%*) do Set /A argC+=1
 
-echo Video2DreamcastDisc v1.1.2 By Alex Free (8/10/2023)
+echo Video2DreamcastDisc v1.1.3 By Alex Free (8/12/2023)
 echo.
 
 IF NOT "%argC%" == "1" (
@@ -62,19 +62,30 @@ IF %output% == 4 (
 	rmdir /S /Q ..\\"%~n1"-splits 2> nul
 	set /p split="Set split interval in minutes:"
 	mkdir ..\\"%~n1"-splits
-	ffmpeg -i "%~f1" -codec copy -f segment -segment_time 00:!split!:00 -reset_timestamps 1 ..\\"%~n1"-splits\\"%~n1"%%03d"%~x1"
+		
+	IF NOT "%~x1" == ".mkv" (
+		IF NOT "%~x1" == ".MKV" (
+			ffmpeg -i "%~f1" -codec copy -f segment -segment_time 00:!split!:00 -reset_timestamps 1 ..\\"%~n1"-splits\\"%~n1"-%%03d"%~x1"
+			echo.
+			echo The file "%~f1" has been split into !split! minute segments, which can be converted by Video2DreamcastDisc individually for multiple discs. These !split! minute segments are located at "%~dp0%~n1-splits"
+			pause
+			exit 0
+		)
+	)
+
+	mkvmerge --split duration:00:!split!:00.000 "%~f1" -o "%~n1"-splits/"%~n1"-split."%~x1"
 	echo.
 	echo The file "%~f1" has been split into !split! minute segments, which can be converted by Video2DreamcastDisc individually for multiple discs. These !split! minute segments are located at "%~dp0%~n1-splits"
 	pause
 	exit 0
 )
 
-echo Enter a number in the range of 1000-3200. Lower values = more video playback time per CD-R but less quality. Higher values = less video playback time per CD-R but higher quality
+echo Enter a number in the recommended range of 1000-2800. Lower values = more video playback time per CD-R but less quality. Higher values = less video playback time per CD-R but higher quality. Any value above 2800 may result in stuttering depening on the CD media.
 set /p bitrate="Enter your desired video track bitrate value in kilobits per second:"
 echo.
 
 ffmpeg -i "%~f1" -vcodec mpeg1video -b:v %bitrate%k -maxrate %bitrate%k -minrate %bitrate%k -bufsize %bitrate%k -muxrate %bitrate%k -s 352x240 -an video.m1v
-ffmpeg -i "%~f1" audio.wav
+ffmpeg -i "%~f1" -ac 2 audio.wav
 adxencd audio.wav audio.adx
 legaladx audio.adx audio.sfa
 sfdmux -V=video.m1v -A=audio.sfa -S=BUMPER.SFD
