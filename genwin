@@ -1,14 +1,19 @@
 #!/bin/bash
 
-version=1.1.3
+if [ $# -lt 1 ]; then
+    echo "Incorrect number of arguments given to $0, aborted"
+    exit 1
+fi
+
+version="$1"
 package=video2dreamcastdisc-$version-windows-x86
 set -e
 
 cd "$(dirname "$0")"
 rm -rf $package $package.zip
 
-# just clean built binaries/releases from source and exit now if given the argument 'clean'
-if [ "$1" == "clean" ]; then
+# just clean built binaries/releases from source and exit now if given the 2nd argument 'clean'
+if [ "$2" == "clean" ]; then
     rm -rf ffmpeg-git-full.7z ffmpeg-git-full
     exit 0
 fi
@@ -47,8 +52,6 @@ bin/mkisofs.exe \
 bin/mkvmerge.exe \
 $package/bin/
 
-cp vid2dcd.bat $package/
-
 # copy and rename license files
 cp unlicense.txt $package/licenses/video2dreamcastdisc.txt
 cp pled/unlicense.txt $package/licenses/pled.txt
@@ -60,13 +63,17 @@ cp licenses/mkvmerge.txt $package/licenses/mkvmerge.txt
 cp ffmpeg-git-full/LICENSE $package/licenses/ffmpeg.txt
 cp ffmpeg-git-full/LICENSE $package/licenses/ffprobe.txt
 
-
-# copy docs
+# copy main files
 cp -r \
 readme.md \
 images \
 vid2dcd.bat \
+config \
 $package/
+
+# convert text files EOL
+dos2unix $package/config/video-bitrate.txt
+dos2unix $package/config/burn-speed.txt
 
 # send it
 chmod -R 777 $package

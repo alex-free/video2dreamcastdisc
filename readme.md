@@ -24,20 +24,17 @@ Video2DremacastDisc can also be used as a modern replacement for the [Sega Dream
 
 **The Linux builds are portable, although they do require [wine](https://www.winehq.org/) to be installed to work due to a few remaining windows-only programs needed in the conversion process.**
 
-### Version 1.1.3 (8/12/2023)
+### Version 1.1.4 (8/13/2023)
 
-*   [Windows x86](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.3/video2dreamcastdisc-1.1.3-windows-x86.zip) _For Windows 10 32-bit/64-bit or newer_.
+*   [Windows x86](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.4/video2dreamcastdisc-1.1.4-windows-x86.zip) _For Windows 10 32-bit/64-bit or newer_.
 
-*   [Linux x86\_64](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.3/video2dreamcastdisc-1.1.3-linux-x86_64.zip) _For x86_64 Linux Distributions_ . 
+*   [Linux x86\_64](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.4/video2dreamcastdisc-1.1.4-linux-x86_64.zip) _For x86_64 Linux Distributions_ . 
 
 Changes:
 
-*   Fixed `adxencd.exe` crash when using media files with more then 2 audio tracks. Audio will always be stereo (mono input will be 'converted' to stereo, really dual mono)
-*   Improved video quality to max by setting `-qscale 0`.
-*   Fixed MKV files not being split properly by option 4 by adding MKVMerge. This makes the Windows version require Windows 10 or later however so that MKVMerge works.
-*   Fixed a relative path as argument 1 not working on Linux.
-*   Removed video bitrate range limit, allowing end users to experiment.
-*   Changed recommended video bitrate range to 1000-2800 kilobits per second.
+*   New option 5 allows setting the burn speed as a saved config file setting. The default is 1 (slowest speed your drive supports will be used).
+*   New option 6 allows setting the video bitrate as a saved config file setting. The default is 2800 (highest recommended value).
+*   Fixed option 4 in the Linux version.
 
 [About previous versions](changelog.md).
 
@@ -46,8 +43,6 @@ Changes:
 Video2DreamcastDisc is driven a command line interface provided by the `vid2dcd.bat` script (Windows) or the `vid2dcd.sh` script (Linux), which are found in each release. These scripts accept only one argument. You can Drag n' drop a video file into the `vid2dcd.bat` script on Windows to provide said argument. You can also do this with the `vid2dcd.sh` script on most Linux distributions. Alternatively on Windows, you may open `cmd.exe`, and execute `vid2dcd.bat` with an argument like `vid2dcd.bat myhuge.mkv`. On Linux, you may also do this by opening the Terminal and executing `./vid2dcd.sh` with an argument like `./vid2dcd.sh somerandom.mp4`.
 
 With a media file as the only argument to these scripts, an option select menu will be displayed. Select an option by typing the corresponding number.
-
-![example 1 linux](images/vid2dcd-lin-1.png) 
 
 ### Option 1 
 
@@ -65,9 +60,17 @@ Create a `video.sfd` file in the Video2DreamcastDisc directory.
 
 Split an existing video file into multiple segments that are each limited to a maximum amount of minutes per segment specified by you. This means you can take a very long video file and split it into i.e. 25 minute segments so that each part of the video can be it's own video file which individually fis on it's own CD-R. A movie could be split like this to be converted by Video2DreamcastDisc afterwards for playback via multiple CD-Rs.
 
-If you have selected option 1, 2, or 3 the next thing you will be prompted for is your desired video bitrate. This must be a number in the range of 1000 to 3200.
+## Option 5
+
+Set the speed at which the CD-R will be burned with. This setting is 1 by default, which will use the slowest speed your drive supports.
+
+## Option 6
+
+Set the video bitrate in kilobits per second. 1000-2800 is the recommended range.
 
 ![example 1 windows](images/vid2dcd-win-1.png) 
+
+![example 1 linux](images/vid2dcd-lin-1.png) 
 
 ![example 2 linux](images/vid2dcd-lin-2.png) 
 
@@ -85,16 +88,13 @@ If you select option 1 on Linux, you'll need to enter your account password to a
 
 ![example 5 linux](images/vid2dcd-lin-5.png)
 
-![example 6 linux](images/vid2dcd-lin-6.png)
-
 ### Video Specifications
 
 *   Resolution: 352x240 (maximum supported by SFD\_Player)
-*   Video bitrate: user selectable, up to 3200 kilobits per second
+*   Video Format: Sofdec Video
+*   Video bitrate: User selectable (default 2800 kilobits per second)
+*   Audio Format: Stero ADX
 *   Audio bitrate: 396 kilobits per second (maximum supported by SFD\_Player)
-*   Audio: Stero ADX
-*   Video: MPEG-1
-*   Format: Sofdec Video
 
 ## Software Suite
 

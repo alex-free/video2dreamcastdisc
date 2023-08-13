@@ -2,28 +2,44 @@
 cd /d %~dp0\bin
 set argC=0
 for %%x in (%*) do Set /A argC+=1
+setlocal enabledelayedexpansion
 
-echo Video2DreamcastDisc v1.1.3 By Alex Free (8/12/2023)
+echo Video2DreamcastDisc v1.1.4 By Alex Free (8/13/2023)
 echo.
 
 IF NOT "%argC%" == "1" (
 	echo Incorrect number of arguments given to %0%, aborted
 	echo.
 	pause
-	exit
+	exit 1
 )
 
 IF NOT EXIST "%~f1" (
 	echo Can't open the file "%~f1" for conversion, aborted..
 	echo.
 	pause
-	exit
-) ELSE (
-	echo Input File: "%~f1"
-	echo.
+	exit 1
 )
 
+IF NOT EXIST "..\config\video-bitrate.txt" (
+    mkdir config
+    echo Video bitrate config not found, setting to default 2800 kilobits per second
+	echo 2800> ..\config\video-bitrate.txt
+)
+
+IF NOT EXIST "..\config\burn-speed.txt" (
+    mkdir config
+    echo Burn speed config not found, setting to default speed of 1x
+	echo 1> ..\config\burn-speed.txt
+)
+
+set /p speed= < ..\config\burn-speed.txt
+echo Burn Speed: %speed%x
+set /p bitrate= < ..\config\video-bitrate.txt
+echo Video Bitrate: %bitrate% kilobits per second
+
 :select_option
+echo.
 echo What do you want to do with "%~f1"?
 echo.
 echo =====================================
@@ -31,11 +47,17 @@ echo 1 - Make .cdi file and burn to CD-R
 echo 2 - Make .cdi file
 echo 3 - Make .sfd file
 echo 4 - Split video into smaller segments
+echo 5 - Set burn speed
+echo 6 - Set video bitrate
 echo =====================================
 echo.
 
 set /p output="Enter an option number:"
-IF %output% == 4 (
+IF %output% == 6 (
+	echo Modify Video Bitrate Config
+) ELSE IF %output% == 5 (
+	echo Modify Burn Speed Config
+) ELSE IF %output% == 4 (
 	echo Output: Multiple "%~x1" files
 ) ELSE IF %output% == 3 (
 	echo Output: "%~n1.sfd"
@@ -57,8 +79,22 @@ del video.iso 2> nul
 del ..\"%~n1".cdi 2> nul
 del sfd_player\movie\BUMPER.SFD 2> nul
 
+
+IF %output% == 6 (
+	echo Enter a number in the recommended range of 1000-2800. Lower values = more video playback time per CD-R but less quality. Higher values = less video playback time per CD-R but higher quality. Any value above 2800 may result in stuttering depening on the CD media.
+	set /p bitrate="Enter your desired video track bitrate value in kilobits per second:"
+	>..\config\video-bitrate.txt echo !bitrate!
+	exit 0
+)
+
+IF %output% == 5 (
+	echo Enter a number for the speed to burn your CD-R. If your burner does not support the speed you provide the closest available speed will be used instead.
+	set /p speed="Set burn speed:"
+	>..\config\burn-speed.txt echo !speed!
+	exit 0
+)
+
 IF %output% == 4 (
-	setlocal enabledelayedexpansion
 	rmdir /S /Q ..\\"%~n1"-splits 2> nul
 	set /p split="Set split interval in minutes:"
 	mkdir ..\\"%~n1"-splits
@@ -80,11 +116,7 @@ IF %output% == 4 (
 	exit 0
 )
 
-echo Enter a number in the recommended range of 1000-2800. Lower values = more video playback time per CD-R but less quality. Higher values = less video playback time per CD-R but higher quality. Any value above 2800 may result in stuttering depening on the CD media.
-set /p bitrate="Enter your desired video track bitrate value in kilobits per second:"
-echo.
-
-ffmpeg -i "%~f1" -vcodec mpeg1video -b:v %bitrate%k -maxrate %bitrate%k -minrate %bitrate%k -bufsize %bitrate%k -muxrate %bitrate%k -s 352x240 -an video.m1v
+ffmpeg -i "%~f1" -vcodec mpeg1video -b:v !bitrate!k -maxrate !bitrate!k -minrate !bitrate!k -bufsize !bitrate!k -muxrate !bitrate!k -s 352x240 -an video.m1v
 ffmpeg -i "%~f1" -ac 2 audio.wav
 adxencd audio.wav audio.adx
 legaladx audio.adx audio.sfa
@@ -106,8 +138,8 @@ IF %output% == 3 (
 	mkisofs -V SFDVIDEO -G IP.BIN -joliet -rock -l -o video.iso sfd_player
 	cdi4dc video.iso ..\\"%~n1".cdi -d
 	cdirip ..\\"%~n1".cdi -iso
-	cdrecord -overburn -speed=1 -v -tao -multi -xa s01t01.iso
-	cdrecord -eject -overburn -speed=1 -v -tao -xa s02t02.iso
+	cdrecord -overburn -speed=!speed! -v -tao -multi -xa s01t01.iso
+	cdrecord -eject -overburn -speed=!speed! -v -tao -xa s02t02.iso
 	del s01t01.iso
 	del s02t02.iso
 	echo.

@@ -1,6 +1,10 @@
 #!/bin/bash
 
-version=1.1.3
+if [ $# -lt 1 ]; then
+    echo "Incorrect number of arguments given to $0, aborted"
+    exit 1
+fi
+version="$1"
 arch=$(uname -p)
 package=video2dreamcastdisc-$version-linux-$arch
 set -e
@@ -8,8 +12,8 @@ set -e
 cd "$(dirname "$0")"
 rm -rf build-tmp $package $package.zip cdrecord-pled cdirip-pled mkisofs-pled mkvmerge-pled
 
-# just clean built binaries/releases from source and exit now if given the argument 'clean'
-if [ "$1" == "clean" ]; then
+# just clean built binaries/releases from source and exit now if given the second argument 'clean'
+if [ "$2" == "clean" ]; then
     rm -rf ffmpeg-git-amd64-static.tar.xz ffmpeg-git-20230721-amd64-static 
     exit 0
 fi
@@ -56,8 +60,6 @@ bin/Sfdmux.dll \
 $package/bin
 rm -rf cdrecord-pled mkisofs-pled cdirip-pled mkvmerge-pled build-tmp
 
-cp -r readme.md images vid2dcd.sh $package/
-
 # FFmpeg/FFprobe
 if [ ! -f "ffmpeg-git-amd64-static.tar.xz" ]; then
     wget https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz 
@@ -78,6 +80,14 @@ cp licenses/cdi4dc.txt $package/licenses/cdi4dc.txt
 cp licenses/mkvmerge.txt $package/licenses/mkvmerge.txt
 cp ffmpeg-git-20230721-amd64-static/GPLv3.txt $package/licenses/ffmpeg.txt
 cp ffmpeg-git-20230721-amd64-static/GPLv3.txt $package/licenses/ffprobe.txt
+
+# copy main files
+cp -r \
+readme.md \
+images \
+vid2dcd.sh \
+config \
+$package/
 
 # send it
 chmod -R 777 $package

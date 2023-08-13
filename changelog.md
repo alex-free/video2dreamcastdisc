@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 1.1.3 (8/13/2023)
+
+*   [Windows x86](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.3/video2dreamcastdisc-1.1.3-windows-x86.zip) _For Windows 10 32-bit/64-bit or newer_.
+
+*   [Linux x86\_64](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.3/video2dreamcastdisc-1.1.3-linux-x86_64.zip) _For x86_64 Linux Distributions_ . 
+
+Changes:
+
+*   Fixed `adxencd.exe` crash when using media files with more then 2 audio tracks. Audio will always be stereo (mono input will be 'converted' to stereo, really dual mono)
+*   Improved video quality to max by setting `-qscale 0`.
+*   Fixed MKV files not being split properly by option 4 by adding MKVMerge. This makes the Windows version require Windows 10 or later however so that MKVMerge works.
+*   Fixed a relative path as argument 1 not working on Linux.
+*   Removed video bitrate range limit, allowing end users to experiment.
+*   Changed recommended video bitrate range to 1000-2800 kilobits per second.
+
 ## Version 1.1.2 (8/10/2023)
 
 *   [Windows x86](https://github.com/alex-free/video2dreamcastdisc/releases/download/v1.1.2/video2dreamcastdisc-1.1.2-windows-x86.zip) _For Windows 7 32-bit/64-bit or newer_.
